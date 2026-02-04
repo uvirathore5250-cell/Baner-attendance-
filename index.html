@@ -3,30 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Baner Attendance Portal</title>
+    <title>Baner Staff Attendance</title>
     <style>
-        :root { --primary: #1e293b; --accent: #22c55e; --yellow: #ffff00; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8fafc; padding: 20px; color: var(--primary); }
-        .card { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        h2 { text-align: center; margin-top: 0; border-bottom: 5px solid var(--yellow); padding-bottom: 10px; font-size: 24px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; color: #64748b; text-transform: uppercase; }
-        select, input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 16px; background: #fff; transition: 0.3s; }
-        select:focus, input:focus { outline: none; border-color: var(--accent); ring: 2px var(--accent); }
-        button { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        button:hover { opacity: 0.9; transform: translateY(-1px); }
-        button:disabled { background: #cbd5e1; cursor: not-allowed; }
-        #status { text-align: center; margin-top: 20px; font-weight: bold; font-size: 15px; min-height: 20px; }
+        :root { --green: #28a745; --yellow: #ffff00; --dark: #1a1a1a; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f9; display: flex; justify-content: center; padding: 20px; }
+        .container { background: white; width: 100%; max-width: 500px; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: var(--dark); border-bottom: 5px solid var(--yellow); padding-bottom: 10px; margin-bottom: 25px; }
+        .input-group { margin-bottom: 18px; }
+        label { display: block; font-weight: 600; margin-bottom: 7px; color: #555; font-size: 14px; }
+        select, input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: var(--green); color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        button:active { transform: scale(0.98); }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        #msg { text-align: center; margin-top: 15px; font-weight: bold; font-size: 15px; }
     </style>
 </head>
 <body>
 
-<div class="card">
+<div class="container">
     <h2>Baner-attendance</h2>
-    <div id="status"></div>
+    <div id="msg"></div>
 
-    <div class="form-group">
-        <label>Select Date</label>
+    <div class="input-group">
+        <label>Date Select Karein</label>
         <select id="rowNum">
             <option value="2">1 Feb (Sunday)</option>
             <option value="3">2 Feb (Monday)</option>
@@ -59,8 +58,8 @@
         </select>
     </div>
 
-    <div class="form-group">
-        <label>Staff Member</label>
+    <div class="input-group">
+        <label>Staff Ka Naam</label>
         <select id="staff">
             <option value="naeem">Naeem Sir</option>
             <option value="pradeep">Pradeep Sir</option>
@@ -69,63 +68,62 @@
         </select>
     </div>
 
-    <div class="form-group">
-        <label>In Time</label>
-        <input type="time" id="inT">
+    <div class="input-group">
+        <label>In Time (Aane ka waqt)</label>
+        <input type="time" id="inTime">
     </div>
 
-    <div class="form-group">
-        <label>Out Time</label>
-        <input type="time" id="outT">
+    <div class="input-group">
+        <label>Out Time (Jaane ka waqt)</label>
+        <input type="time" id="outTime">
     </div>
 
-    <button onclick="updateSheet()" id="btn">Update Google Sheet</button>
+    <button onclick="submitAttendance()" id="btn">Update Sheet</button>
 </div>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNizq5WQHcobjw8fd_9w__k_vA_VUFf5BB9dJrARPC9o4imwKMyCPXvZDKr6X2_ew6Nw/exec';
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwgR4Uhvl8nWCcspnJshUftWfWL8U6nRqFblZBJONl_PXNgyn-2_ME9Ff5oER2DVjvB3A/exec';
 
-    function formatTime(t) {
-        if(!t) return "";
-        let [h, m] = t.split(':');
+    function formatAMPM(time) {
+        if(!time) return "";
+        let [h, m] = time.split(':');
         let ampm = h >= 12 ? 'PM' : 'AM';
         h = h % 12 || 12;
         return h + ":" + m + " " + ampm;
     }
 
-    async function updateSheet() {
+    async function submitAttendance() {
         const rowNum = document.getElementById('rowNum').value;
         const staff = document.getElementById('staff').value;
-        const inT = document.getElementById('inT').value;
-        const outT = document.getElementById('outT').value;
+        const inT = document.getElementById('inTime').value;
+        const outT = document.getElementById('outTime').value;
 
         if(!inT || !outT) {
-            alert("Please fill both In and Out times!");
+            alert("Bhai, Time toh bhar do!");
             return;
         }
 
         const btn = document.getElementById('btn');
-        const status = document.getElementById('status');
+        const msg = document.getElementById('msg');
 
         btn.disabled = true;
-        status.innerText = "⏳ Sending data to Google Sheet...";
-        status.style.color = "#3b82f6";
+        msg.innerText = "⏳ Sheet update ho rahi hai...";
+        msg.style.color = "blue";
 
-        const timeRange = formatTime(inT) + " to " + formatTime(outT);
+        const timeRange = formatAMPM(inT) + " to " + formatAMPM(outT);
 
         try {
-            await fetch(SCRIPT_URL, {
+            await fetch(WEB_APP_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 body: JSON.stringify({ rowNum, staff, timeRange })
             });
 
-            status.innerText = "✅ Success! Sheet Updated for Row " + rowNum;
-            status.style.color = "#16a34a";
+            msg.innerText = "✅ Success! Sheet mein data chala gaya.";
+            msg.style.color = "green";
         } catch (error) {
-            console.error(error);
-            status.innerText = "❌ Error! Please check connection.";
-            status.style.color = "#dc2626";
+            msg.innerText = "❌ Error! Internet check karein.";
+            msg.style.color = "red";
         } finally {
             btn.disabled = false;
         }
