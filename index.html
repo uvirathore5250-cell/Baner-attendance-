@@ -5,167 +5,131 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Baner Attendance Portal</title>
     <style>
-        :root { --primary: #0f172a; --accent: #28a745; --yellow: #ffff00; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 15px; }
-        .container { max-width: 950px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: var(--primary); border-bottom: 4px solid var(--yellow); padding-bottom: 10px; margin-top: 0; }
-        
-        .input-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; background: #f8fafc; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 30px; }
-        .input-form div { display: flex; flex-direction: column; }
-        label { font-size: 11px; font-weight: bold; color: #64748b; margin-bottom: 5px; text-transform: uppercase; }
-        input, select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
-        
-        button { background: var(--accent); color: white; border: none; padding: 12px; cursor: pointer; border-radius: 6px; font-weight: bold; margin-top: 18px; transition: 0.3s; }
+        :root { --primary: #1e293b; --accent: #22c55e; --yellow: #ffff00; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8fafc; padding: 20px; color: var(--primary); }
+        .card { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        h2 { text-align: center; margin-top: 0; border-bottom: 5px solid var(--yellow); padding-bottom: 10px; font-size: 24px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; color: #64748b; text-transform: uppercase; }
+        select, input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 16px; background: #fff; transition: 0.3s; }
+        select:focus, input:focus { outline: none; border-color: var(--accent); ring: 2px var(--accent); }
+        button { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
         button:hover { opacity: 0.9; transform: translateY(-1px); }
-        button:disabled { background: #94a3b8; cursor: not-allowed; }
-
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th, td { border: 1px solid #000; padding: 10px; text-align: center; font-size: 13px; }
-        th { background-color: var(--yellow); font-weight: bold; text-transform: uppercase; }
-        .sunday-row { background-color: var(--yellow) !important; }
-        #status { text-align: center; font-weight: bold; margin-bottom: 10px; display: none; }
+        button:disabled { background: #cbd5e1; cursor: not-allowed; }
+        #status { text-align: center; margin-top: 20px; font-weight: bold; font-size: 15px; min-height: 20px; }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="card">
     <h2>Baner-attendance</h2>
-    <div id="status">Updating Google Sheet...</div>
+    <div id="status"></div>
 
-    <div class="input-form">
-        <div>
-            <label>Date</label>
-            <input type="date" id="attDate" onchange="updateDay()">
-        </div>
-        <div>
-            <label>Day</label>
-            <input type="text" id="attDay" readonly>
-        </div>
-        <div>
-            <label>Staff Member</label>
-            <select id="staffName">
-                <option value="naeem">Naeem Sir</option>
-                <option value="pradeep">Pradeep Sir</option>
-                <option value="rohini">Rohini Mam</option>
-                <option value="yuvraj">Yuvraj Sir</option>
-            </select>
-        </div>
-        <div>
-            <label>In Time</label>
-            <input type="time" id="inTime">
-        </div>
-        <div>
-            <label>Out Time</label>
-            <input type="time" id="outTime">
-        </div>
-        <button id="submitBtn" onclick="saveAttendance()">Update Sheet</button>
+    <div class="form-group">
+        <label>Select Date</label>
+        <select id="rowNum">
+            <option value="2">1 Feb (Sunday)</option>
+            <option value="3">2 Feb (Monday)</option>
+            <option value="4">3 Feb (Tuesday)</option>
+            <option value="5">4 Feb (Wednesday)</option>
+            <option value="6">5 Feb (Thursday)</option>
+            <option value="7">6 Feb (Friday)</option>
+            <option value="8">7 Feb (Saturday)</option>
+            <option value="9">8 Feb (Sunday)</option>
+            <option value="10">9 Feb (Monday)</option>
+            <option value="11">10 Feb (Tuesday)</option>
+            <option value="12">11 Feb (Wednesday)</option>
+            <option value="13">12 Feb (Thursday)</option>
+            <option value="14">13 Feb (Friday)</option>
+            <option value="15">14 Feb (Saturday)</option>
+            <option value="16">15 Feb (Sunday)</option>
+            <option value="17">16 Feb (Monday)</option>
+            <option value="18">17 Feb (Tuesday)</option>
+            <option value="19">18 Feb (Wednesday)</option>
+            <option value="20">19 Feb (Thursday)</option>
+            <option value="21">20 Feb (Friday)</option>
+            <option value="22">21 Feb (Saturday)</option>
+            <option value="23">22 Feb (Sunday)</option>
+            <option value="24">23 Feb (Monday)</option>
+            <option value="25">24 Feb (Tuesday)</option>
+            <option value="26">25 Feb (Wednesday)</option>
+            <option value="27">26 Feb (Thursday)</option>
+            <option value="28">27 Feb (Friday)</option>
+            <option value="29">28 Feb (Saturday)</option>
+        </select>
     </div>
 
-    <div style="overflow-x: auto;">
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Day</th>
-                    <th>Naeem Sir</th>
-                    <th>Pradeep Sir</th>
-                    <th>Rohini Mam</th>
-                    <th>Yuvraj Sir</th>
-                </tr>
-            </thead>
-            <tbody id="sheetBody"></tbody>
-        </table>
+    <div class="form-group">
+        <label>Staff Member</label>
+        <select id="staff">
+            <option value="naeem">Naeem Sir</option>
+            <option value="pradeep">Pradeep Sir</option>
+            <option value="rohini">Rohini Mam</option>
+            <option value="yuvraj">Yuvraj Sir</option>
+        </select>
     </div>
+
+    <div class="form-group">
+        <label>In Time</label>
+        <input type="time" id="inT">
+    </div>
+
+    <div class="form-group">
+        <label>Out Time</label>
+        <input type="time" id="outT">
+    </div>
+
+    <button onclick="updateSheet()" id="btn">Update Google Sheet</button>
 </div>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypr_T2BrBvuJH2lvJ0jsFEL1t4gC00sWWLI7TY7tlG7eD3LD6DYXxoMuOpRlqirBRdkQ/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNizq5WQHcobjw8fd_9w__k_vA_VUFf5BB9dJrARPC9o4imwKMyCPXvZDKr6X2_ew6Nw/exec';
 
-    function formatAMPM(time) {
-        if(!time) return "";
-        let [h, m] = time.split(':');
+    function formatTime(t) {
+        if(!t) return "";
+        let [h, m] = t.split(':');
         let ampm = h >= 12 ? 'PM' : 'AM';
         h = h % 12 || 12;
-        return `${h}:${m} ${ampm}`;
+        return h + ":" + m + " " + ampm;
     }
 
-    function updateDay() {
-        const dVal = document.getElementById('attDate').value;
-        if(dVal) {
-            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            document.getElementById('attDay').value = days[new Date(dVal).getDay()];
+    async function updateSheet() {
+        const rowNum = document.getElementById('rowNum').value;
+        const staff = document.getElementById('staff').value;
+        const inT = document.getElementById('inT').value;
+        const outT = document.getElementById('outT').value;
+
+        if(!inT || !outT) {
+            alert("Please fill both In and Out times!");
+            return;
         }
-    }
 
-    async function saveAttendance() {
-        const dateVal = document.getElementById('attDate').value;
-        const day = document.getElementById('attDay').value;
-        const staff = document.getElementById('staffName').value;
-        const inT = document.getElementById('inTime').value;
-        const outT = document.getElementById('outTime').value;
-
-        if(!dateVal || !inT || !outT) return alert("Fill all fields!");
-
-        const btn = document.getElementById('submitBtn');
+        const btn = document.getElementById('btn');
         const status = document.getElementById('status');
-        btn.disabled = true;
-        status.style.display = 'block';
-        status.style.color = 'blue';
 
-        // Format Date to match Sheet (e.g., "4 Feb")
-        const d = new Date(dateVal);
-        const dateDisplay = d.getDate() + " " + d.toLocaleString('default', { month: 'short' });
-        const timeRange = `${formatAMPM(inT)} to ${formatAMPM(outT)}`;
+        btn.disabled = true;
+        status.innerText = "⏳ Sending data to Google Sheet...";
+        status.style.color = "#3b82f6";
+
+        const timeRange = formatTime(inT) + " to " + formatTime(outT);
 
         try {
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                body: JSON.stringify({ dateDisplay, day, staff, timeRange })
+                body: JSON.stringify({ rowNum, staff, timeRange })
             });
 
-            status.textContent = "Success! Sheet Updated.";
-            status.style.color = "green";
-            
-            // Local View Update
-            updateLocal(dateDisplay, day, staff, timeRange);
-        } catch (e) {
-            alert("Error: " + e.message);
+            status.innerText = "✅ Success! Sheet Updated for Row " + rowNum;
+            status.style.color = "#16a34a";
+        } catch (error) {
+            console.error(error);
+            status.innerText = "❌ Error! Please check connection.";
+            status.style.color = "#dc2626";
         } finally {
             btn.disabled = false;
-            setTimeout(() => { status.style.display = 'none'; }, 3000);
         }
     }
-
-    function updateLocal(date, day, staff, val) {
-        let db = JSON.parse(localStorage.getItem('baner_db')) || {};
-        if(!db[date]) db[date] = { day, naeem:"", pradeep:"", rohini:"", yuvraj:"" };
-        db[date][staff] = val;
-        localStorage.setItem('baner_db', JSON.stringify(db));
-        render();
-    }
-
-    function render() {
-        let db = JSON.parse(localStorage.getItem('baner_db')) || {};
-        let html = "";
-        Object.keys(db).forEach(date => {
-            const row = db[date];
-            const sunClass = row.day === 'Sunday' ? 'sunday-row' : '';
-            html += `<tr class="${sunClass}">
-                <td>${date}</td>
-                <td><b>${row.day}</b></td>
-                <td>${row.naeem}</td>
-                <td>${row.pradeep}</td>
-                <td>${row.rohini}</td>
-                <td>${row.yuvraj}</td>
-            </tr>`;
-        });
-        document.getElementById('sheetBody').innerHTML = html;
-    }
-
-    document.getElementById('attDate').valueAsDate = new Date();
-    updateDay();
-    render();
 </script>
 
 </body>
