@@ -3,37 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Baner Attendance Sheet</title>
+    <title>Baner Attendance Portal</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 10px; }
-        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow-x: auto; }
-        h2 { text-align: center; color: #333; margin-bottom: 20px; border-bottom: 2px solid #ffff00; padding-bottom: 10px; }
+        :root { --primary: #0f172a; --accent: #28a745; --yellow: #ffff00; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 15px; }
+        .container { max-width: 950px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: var(--primary); border-bottom: 4px solid var(--yellow); padding-bottom: 10px; margin-top: 0; }
         
-        /* Input Form */
-        .input-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 30px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd; }
+        .input-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; background: #f8fafc; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 30px; }
         .input-form div { display: flex; flex-direction: column; }
-        label { font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #555; text-transform: uppercase; }
-        input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        label { font-size: 11px; font-weight: bold; color: #64748b; margin-bottom: 5px; text-transform: uppercase; }
+        input, select { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
         
-        button { background: #28a745; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 4px; font-weight: bold; margin-top: 18px; transition: 0.2s; }
-        button:hover { background: #218838; }
-        button:disabled { background: #ccc; cursor: not-allowed; }
+        button { background: var(--accent); color: white; border: none; padding: 12px; cursor: pointer; border-radius: 6px; font-weight: bold; margin-top: 18px; transition: 0.3s; }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        button:disabled { background: #94a3b8; cursor: not-allowed; }
 
-        /* Table Style */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 850px; }
-        th, td { border: 1px solid #000; padding: 8px; text-align: center; font-size: 13px; height: 35px; }
-        th { background-color: #ffff00; font-weight: bold; text-transform: uppercase; }
-        .sunday-row { background-color: #ffff00 !important; }
-        .day-column { text-transform: uppercase; font-weight: bold; }
-        
-        #loadingMsg { color: blue; font-weight: bold; display: none; text-align: center; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th, td { border: 1px solid #000; padding: 10px; text-align: center; font-size: 13px; }
+        th { background-color: var(--yellow); font-weight: bold; text-transform: uppercase; }
+        .sunday-row { background-color: var(--yellow) !important; }
+        #status { text-align: center; font-weight: bold; margin-bottom: 10px; display: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>Baner-attendance</h2>
-    <div id="loadingMsg">Sending data to Google Sheet...</div>
+    <div id="status">Updating Google Sheet...</div>
 
     <div class="input-form">
         <div>
@@ -42,10 +39,10 @@
         </div>
         <div>
             <label>Day</label>
-            <input type="text" id="attDay" readonly placeholder="Auto-fill">
+            <input type="text" id="attDay" readonly>
         </div>
         <div>
-            <label>Staff Name</label>
+            <label>Staff Member</label>
             <select id="staffName">
                 <option value="naeem">Naeem Sir</option>
                 <option value="pradeep">Pradeep Sir</option>
@@ -64,121 +61,111 @@
         <button id="submitBtn" onclick="saveAttendance()">Update Sheet</button>
     </div>
 
-    <table id="attendanceSheet">
-        <thead>
-            <tr>
-                <th>date</th>
-                <th>DAY</th>
-                <th>Naeem sir</th>
-                <th>Pradeep sir</th>
-                <th>Rohini mam</th>
-                <th>Yuvraj sir</th>
-            </tr>
-        </thead>
-        <tbody id="sheetBody"></tbody>
-    </table>
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Day</th>
+                    <th>Naeem Sir</th>
+                    <th>Pradeep Sir</th>
+                    <th>Rohini Mam</th>
+                    <th>Yuvraj Sir</th>
+                </tr>
+            </thead>
+            <tbody id="sheetBody"></tbody>
+        </table>
+    </div>
 </div>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyFPqED0_Cbz-bywz5NC0zABvsxqPWVQdh4uOp4PkwyLZameuOXBOjr9x9DrfYkj3lo/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypr_T2BrBvuJH2lvJ0jsFEL1t4gC00sWWLI7TY7tlG7eD3LD6DYXxoMuOpRlqirBRdkQ/exec';
 
     function formatAMPM(time) {
         if(!time) return "";
-        let [hours, minutes] = time.split(':');
-        let ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12;
-        return `${hours}:${minutes} ${ampm}`;
+        let [h, m] = time.split(':');
+        let ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12 || 12;
+        return `${h}:${m} ${ampm}`;
     }
 
     function updateDay() {
-        const dateVal = document.getElementById('attDate').value;
-        if(dateVal) {
+        const dVal = document.getElementById('attDate').value;
+        if(dVal) {
             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            const d = new Date(dateVal);
-            document.getElementById('attDay').value = days[d.getDay()];
+            document.getElementById('attDay').value = days[new Date(dVal).getDay()];
         }
     }
 
     async function saveAttendance() {
-        const dateRaw = document.getElementById('attDate').value;
+        const dateVal = document.getElementById('attDate').value;
         const day = document.getElementById('attDay').value;
         const staff = document.getElementById('staffName').value;
-        const inTRaw = document.getElementById('inTime').value;
-        const outTRaw = document.getElementById('outTime').value;
+        const inT = document.getElementById('inTime').value;
+        const outT = document.getElementById('outTime').value;
 
-        if(!dateRaw || !inTRaw || !outTRaw) { 
-            alert("Please fill Date, In Time and Out Time!"); 
-            return; 
-        }
+        if(!dateVal || !inT || !outT) return alert("Fill all fields!");
 
         const btn = document.getElementById('submitBtn');
-        const loader = document.getElementById('loadingMsg');
-        
-        // UI Updates
+        const status = document.getElementById('status');
         btn.disabled = true;
-        loader.style.display = 'block';
+        status.style.display = 'block';
+        status.style.color = 'blue';
 
-        const d = new Date(dateRaw);
+        // Format Date to match Sheet (e.g., "4 Feb")
+        const d = new Date(dateVal);
         const dateDisplay = d.getDate() + " " + d.toLocaleString('default', { month: 'short' });
-        const timeRange = `${formatAMPM(inTRaw)} to ${formatAMPM(outTRaw)}`;
-
-        const payload = { dateDisplay, day, staff, timeRange };
+        const timeRange = `${formatAMPM(inT)} to ${formatAMPM(outT)}`;
 
         try {
-            // Sending to Google Sheets
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                body: JSON.stringify(payload)
+                body: JSON.stringify({ dateDisplay, day, staff, timeRange })
             });
 
-            alert("Success! Google Sheet updated.");
+            status.textContent = "Success! Sheet Updated.";
+            status.style.color = "green";
             
-            // Local table update for instant feedback
-            updateLocalView(dateDisplay, day, staff, timeRange);
-            
-        } catch (error) {
-            console.error(error);
-            alert("Error updating sheet. Check console.");
+            // Local View Update
+            updateLocal(dateDisplay, day, staff, timeRange);
+        } catch (e) {
+            alert("Error: " + e.message);
         } finally {
             btn.disabled = false;
-            loader.style.display = 'none';
+            setTimeout(() => { status.style.display = 'none'; }, 3000);
         }
     }
 
-    function updateLocalView(date, day, staff, text) {
+    function updateLocal(date, day, staff, val) {
         let db = JSON.parse(localStorage.getItem('baner_db')) || {};
-        if(!db[date]) db[date] = { day: day, naeem: "", pradeep: "", rohini: "", yuvraj: "" };
-        db[date][staff] = text;
+        if(!db[date]) db[date] = { day, naeem:"", pradeep:"", rohini:"", yuvraj:"" };
+        db[date][staff] = val;
         localStorage.setItem('baner_db', JSON.stringify(db));
-        renderSheet();
+        render();
     }
 
-    function renderSheet() {
+    function render() {
         let db = JSON.parse(localStorage.getItem('baner_db')) || {};
         let html = "";
-        const dates = Object.keys(db).sort((a,b) => new Date(a) - new Date(b));
-
-        dates.forEach(date => {
-            const data = db[date];
-            const isSunday = data.day === 'Sunday' ? 'sunday-row' : '';
-            html += `<tr class="${isSunday}">
+        Object.keys(db).forEach(date => {
+            const row = db[date];
+            const sunClass = row.day === 'Sunday' ? 'sunday-row' : '';
+            html += `<tr class="${sunClass}">
                 <td>${date}</td>
-                <td class="day-column">${data.day}</td>
-                <td>${data.naeem}</td>
-                <td>${data.pradeep}</td>
-                <td>${data.rohini}</td>
-                <td>${data.yuvraj}</td>
+                <td><b>${row.day}</b></td>
+                <td>${row.naeem}</td>
+                <td>${row.pradeep}</td>
+                <td>${row.rohini}</td>
+                <td>${row.yuvraj}</td>
             </tr>`;
         });
         document.getElementById('sheetBody').innerHTML = html;
     }
 
-    // On Load
     document.getElementById('attDate').valueAsDate = new Date();
     updateDay();
-    renderSheet();
+    render();
 </script>
 
 </body>
