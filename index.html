@@ -3,149 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Official Staff Portal</title>
+    <title>Baner Attendance Sheet</title>
     <style>
-        :root { --primary: #0f172a; --accent: #3b82f6; --bg: #f1f5f9; }
-        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); padding: 20px; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: var(--primary); font-weight: 800; border-bottom: 2px solid var(--bg); padding-bottom: 15px; }
+        body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 10px; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow-x: auto; }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; border-bottom: 2px solid #ffff00; padding-bottom: 10px; }
         
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 25px 0; }
-        label { display: block; font-size: 13px; font-weight: 600; text-transform: uppercase; color: #64748b; margin-bottom: 8px; }
+        /* Input Form */
+        .input-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 30px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd; }
+        .input-form div { display: flex; flex-direction: column; }
+        label { font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #555; text-transform: uppercase; }
+        input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
         
-        select, input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 15px; outline: none; transition: 0.2s; }
-        select:focus, input:focus { border-color: var(--accent); }
-        
-        .btn-group { display: flex; gap: 10px; }
-        button { flex: 1; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; }
-        .btn-save { background: var(--accent); color: white; }
-        .btn-export { background: #10b981; color: white; }
-        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        button { background: #28a745; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 4px; font-weight: bold; margin-top: 18px; transition: 0.2s; }
+        button:hover { background: #218838; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
 
-        .table-section { margin-top: 40px; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
-        th { background: #f8fafc; padding: 15px; text-align: left; color: #475569; font-size: 14px; }
-        td { padding: 15px; border-top: 1px solid #f1f5f9; font-size: 15px; }
-        .status-in { color: #059669; font-weight: 600; }
-        .status-out { color: #dc2626; font-weight: 600; }
-        .name-tag { font-weight: 700; color: var(--primary); }
+        /* Table Style */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 850px; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: center; font-size: 13px; height: 35px; }
+        th { background-color: #ffff00; font-weight: bold; text-transform: uppercase; }
+        .sunday-row { background-color: #ffff00 !important; }
+        .day-column { text-transform: uppercase; font-weight: bold; }
+        
+        #loadingMsg { color: blue; font-weight: bold; display: none; text-align: center; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>STAFF ATTENDANCE LOG</h2>
-    
-    <div class="form-grid">
+    <h2>Baner-attendance</h2>
+    <div id="loadingMsg">Sending data to Google Sheet...</div>
+
+    <div class="input-form">
         <div>
-            <label>Select Staff Member</label>
+            <label>Date</label>
+            <input type="date" id="attDate" onchange="updateDay()">
+        </div>
+        <div>
+            <label>Day</label>
+            <input type="text" id="attDay" readonly placeholder="Auto-fill">
+        </div>
+        <div>
+            <label>Staff Name</label>
             <select id="staffName">
-                <option value="Naeem Sir">Naeem Sir</option>
-                <option value="Pradeep Sir">Pradeep Sir</option>
-                <option value="Yuvraj Sir">Yuvraj Sir</option>
-                <option value="Rohini Mam">Rohini Mam</option>
+                <option value="naeem">Naeem Sir</option>
+                <option value="pradeep">Pradeep Sir</option>
+                <option value="rohini">Rohini Mam</option>
+                <option value="yuvraj">Yuvraj Sir</option>
             </select>
         </div>
         <div>
-            <label>Date</label>
-            <input type="date" id="attDate">
-        </div>
-        <div>
-            <label>In-Time</label>
+            <label>In Time</label>
             <input type="time" id="inTime">
         </div>
         <div>
-            <label>Out-Time</label>
+            <label>Out Time</label>
             <input type="time" id="outTime">
         </div>
-    </div>
-    
-    <div class="btn-group">
-        <button class="btn-save" onclick="addEntry()">Record Attendance</button>
-        <button class="btn-export" onclick="exportData()">Download Report (CSV)</button>
+        <button id="submitBtn" onclick="saveAttendance()">Update Sheet</button>
     </div>
 
-    <div class="table-section">
-        <table>
-            <thead>
-                <tr>
-                    <th>Staff Name</th>
-                    <th>Date</th>
-                    <th>Entry</th>
-                    <th>Exit</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="logBody"></tbody>
-        </table>
-    </div>
+    <table id="attendanceSheet">
+        <thead>
+            <tr>
+                <th>date</th>
+                <th>DAY</th>
+                <th>Naeem sir</th>
+                <th>Pradeep sir</th>
+                <th>Rohini mam</th>
+                <th>Yuvraj sir</th>
+            </tr>
+        </thead>
+        <tbody id="sheetBody"></tbody>
+    </table>
 </div>
 
 <script>
-    document.getElementById('attDate').valueAsDate = new Date();
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyFPqED0_Cbz-bywz5NC0zABvsxqPWVQdh4uOp4PkwyLZameuOXBOjr9x9DrfYkj3lo/exec';
 
-    function addEntry() {
-        const name = document.getElementById('staffName').value;
-        const date = document.getElementById('attDate').value;
-        const inT = document.getElementById('inTime').value;
-        const outT = document.getElementById('outTime').value;
-
-        if(!inT) { alert("Please enter In-Time"); return; }
-
-        const entry = { name, date, inT, outT, id: Date.now() };
-        let logs = JSON.parse(localStorage.getItem('staff_db')) || [];
-        logs.push(entry);
-        localStorage.setItem('staff_db', JSON.stringify(logs));
-
-        renderTable();
+    function formatAMPM(time) {
+        if(!time) return "";
+        let [hours, minutes] = time.split(':');
+        let ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        return `${hours}:${minutes} ${ampm}`;
     }
 
-    function renderTable() {
-        let logs = JSON.parse(localStorage.getItem('staff_db')) || [];
-        let html = "";
-        // Latest entries first
-        [...logs].reverse().forEach(item => {
-            html += `<tr>
-                <td class="name-tag">${item.name}</td>
-                <td>${item.date}</td>
-                <td class="status-in">${item.inT}</td>
-                <td class="status-out">${item.outT || '--:--'}</td>
-                <td><button onclick="deleteEntry(${item.id})" style="color:red; background:none; border:none; cursor:pointer;">✖</button></td>
-            </tr>`;
-        });
-        document.getElementById('logBody').innerHTML = html;
-    }
-
-    function deleteEntry(id) {
-        if(confirm("Delete this record?")) {
-            let logs = JSON.parse(localStorage.getItem('staff_db')) || [];
-            logs = logs.filter(item => item.id !== id);
-            localStorage.setItem('staff_db', JSON.stringify(logs));
-            renderTable();
+    function updateDay() {
+        const dateVal = document.getElementById('attDate').value;
+        if(dateVal) {
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const d = new Date(dateVal);
+            document.getElementById('attDay').value = days[d.getDay()];
         }
     }
 
-    function exportData() {
-        let logs = JSON.parse(localStorage.getItem('staff_db')) || [];
-        if(logs.length === 0) { alert("No data to export"); return; }
-        
-        let csv = "Name,Date,In-Time,Out-Time\n";
-        logs.forEach(row => {
-            csv += `${row.name},${row.date},${row.inT},${row.outT || 'N/A'}\n`;
-        });
+    async function saveAttendance() {
+        const dateRaw = document.getElementById('attDate').value;
+        const day = document.getElementById('attDay').value;
+        const staff = document.getElementById('staffName').value;
+        const inTRaw = document.getElementById('inTime').value;
+        const outTRaw = document.getElementById('outTime').value;
 
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.setAttribute('hidden', '');
-        a.setAttribute('href', url);
-        a.setAttribute('download', 'Staff_Attendance_Report.csv');
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        if(!dateRaw || !inTRaw || !outTRaw) { 
+            alert("Please fill Date, In Time and Out Time!"); 
+            return; 
+        }
+
+        const btn = document.getElementById('submitBtn');
+        const loader = document.getElementById('loadingMsg');
+        
+        // UI Updates
+        btn.disabled = true;
+        loader.style.display = 'block';
+
+        const d = new Date(dateRaw);
+        const dateDisplay = d.getDate() + " " + d.toLocaleString('default', { month: 'short' });
+        const timeRange = `${formatAMPM(inTRaw)} to ${formatAMPM(outTRaw)}`;
+
+        const payload = { dateDisplay, day, staff, timeRange };
+
+        try {
+            // Sending to Google Sheets
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(payload)
+            });
+
+            alert("Success! Google Sheet updated.");
+            
+            // Local table update for instant feedback
+            updateLocalView(dateDisplay, day, staff, timeRange);
+            
+        } catch (error) {
+            console.error(error);
+            alert("Error updating sheet. Check console.");
+        } finally {
+            btn.disabled = false;
+            loader.style.display = 'none';
+        }
     }
 
-    renderTable();
+    function updateLocalView(date, day, staff, text) {
+        let db = JSON.parse(localStorage.getItem('baner_db')) || {};
+        if(!db[date]) db[date] = { day: day, naeem: "", pradeep: "", rohini: "", yuvraj: "" };
+        db[date][staff] = text;
+        localStorage.setItem('baner_db', JSON.stringify(db));
+        renderSheet();
+    }
+
+    function renderSheet() {
+        let db = JSON.parse(localStorage.getItem('baner_db')) || {};
+        let html = "";
+        const dates = Object.keys(db).sort((a,b) => new Date(a) - new Date(b));
+
+        dates.forEach(date => {
+            const data = db[date];
+            const isSunday = data.day === 'Sunday' ? 'sunday-row' : '';
+            html += `<tr class="${isSunday}">
+                <td>${date}</td>
+                <td class="day-column">${data.day}</td>
+                <td>${data.naeem}</td>
+                <td>${data.pradeep}</td>
+                <td>${data.rohini}</td>
+                <td>${data.yuvraj}</td>
+            </tr>`;
+        });
+        document.getElementById('sheetBody').innerHTML = html;
+    }
+
+    // On Load
+    document.getElementById('attDate').valueAsDate = new Date();
+    updateDay();
+    renderSheet();
 </script>
 
 </body>
