@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Attendance System</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f9; padding: 20px; text-align: center; }
+        .container { max-width: 400px; background: white; padding: 20px; border-radius: 10px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        input { width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+        button { padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        table { width: 100%; margin-top: 20px; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #eee; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Staff Attendance</h2>
+    <input type="text" id="staffName" placeholder="Enter Staff Name">
+    <button onclick="markAttendance()">Mark Present</button>
+
+    <h3>Today's Record</h3>
+    <table id="attendanceTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody id="recordBody"></tbody>
+    </table>
+    <button onclick="clearData()" style="background:#dc3545; margin-top:10px;">Clear All</button>
+</div>
+
+<script>
+    function markAttendance() {
+        let name = document.getElementById('staffName').value;
+        if(name === "") { alert("Please enter a name"); return; }
+
+        let now = new Date();
+        let time = now.toLocaleTimeString();
+        
+        let record = { name: name, time: time };
+        
+        // Save to LocalStorage
+        let data = JSON.parse(localStorage.getItem('attendance')) || [];
+        data.push(record);
+        localStorage.setItem('attendance', JSON.stringify(data));
+
+        displayData();
+        document.getElementById('staffName').value = "";
+    }
+
+    function displayData() {
+        let data = JSON.parse(localStorage.getItem('attendance')) || [];
+        let html = "";
+        data.forEach(item => {
+            html += `<tr><td>${item.name}</td><td>${item.time}</td></tr>`;
+        });
+        document.getElementById('recordBody').innerHTML = html;
+    }
+
+    function clearData() {
+        localStorage.removeItem('attendance');
+        displayData();
+    }
+
+    // Load data on start
+    displayData();
+</script>
+
+</body>
+</html>
